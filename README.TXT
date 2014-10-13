@@ -1,0 +1,4 @@
+先生成数据脚本执行 GrabWeatherData文件
+进到这个文件目录下  执行:python GrabWeatherData
+会在D盘根目录下生成data。txt文件
+执行 GoodWather文件 即可交互模式得到实时的天气信息
