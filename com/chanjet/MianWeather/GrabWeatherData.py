@@ -47,8 +47,9 @@ for d in districts:
         line += "'%s':'%s',\n" % (countyName,destination)
     except:
         print d_code,'失败了'    
-lines = line+"}"
-file = open("d:1.txt","w+")
+lines = line[0,len(line)]+"}"
+file = open("data.txt","w+")
 file.writelines(lines)
+file.close()
 
 # print countyName + ':' + destination
