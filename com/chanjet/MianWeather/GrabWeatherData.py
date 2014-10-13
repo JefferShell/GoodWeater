@@ -6,52 +6,67 @@ Created on 2014年10月12日
 '''
 import urllib2
 
-#得到省份代码  01|北京,02|上海,03|天津。。。。。
-url1 = 'http://m.weather.com.cn/data5/city.xml'
-content = urllib2.urlopen(url1).read()
-print content
-provinces = content.split(',')
-line =''
 url = 'http://m.weather.com.cn/data3/city%s.xml'
-#得到城市代码  0501|哈尔滨,0502|齐齐哈尔,0503|牡丹江,0504|
+provinces=[]
 cities = []
 districts = []
-for p in provinces:
-    try:
-        p_code = p.split('|')[0]
-        url2 = url % p_code
-        content2 = urllib2.urlopen(url2).read()
-#         print 'content2:',content2
-        cities +=content2.split(',')
-#         print 'len:',len(cities)
-    except:
-        print str(p_code),'失败'
-        #得到地区代码  010101|北京,010102|海淀,010103....
-print "20%"
-# print '长度',len(cities)
-for c in cities:
-    c_code = c.split('|')[0]
-    url3 = url % c_code
-    content3 = urllib2.urlopen(url3).read()
-#     print 'content3',content3
-    districts += content3.split(',')  
-print "50%"
-for d in districts:
-    try:
-        d_pair = d.split('|')
-        d_code = d_pair[0]
-        countyName = d_pair[1]
-        url4 = url % d_code
-        content4 = urllib2.urlopen(url4).read()
-#         print content4
-        destination = content4.split('|')[1]
-        line += "%s:%s\n" % (countyName,destination)
-    except:
-        print d_code,'失败了' 
-print "80%"   
-lines = line
-file = open("d:/data.txt","w+")
-file.writelines(lines)
-file.close()
+lines=""
 
-# print countyName + ':' + destination
+def getProvinces():
+    try:
+        url1 = 'http://m.weather.com.cn/data5/city.xml'
+        content = urllib2.urlopen(url1).read()
+        print content
+        provinces = content.split(',')
+    except:
+        print 'getProvinces----','失败'
+    return provinces
+def getDeepArea(oldAreas):
+    newArea = []
+    for oldArea in oldAreas:
+        try:
+            AreaCode = oldArea.split('|')[0]
+            newUrl = url % AreaCode
+            content = urllib2.urlopen(newUrl).read()
+            newArea +=content.split(',')
+        except:
+            print 'getDeepArea----',str(AreaCode),'失败'
+    return newArea
+def getLines(districts):
+    line =""
+    for d in districts:
+        try:
+            d_pair = d.split('|')
+            d_code = d_pair[0]
+            countyName = d_pair[1]
+            url4 = url % d_code
+            content4 = urllib2.urlopen(url4).read()
+    #         print content4
+            destination = content4.split('|')[1]
+            line += "%s:%s\n" % (countyName,destination)
+        except Exception , e:
+            print e
+            print 'getLines----',d_code,'失败了'
+    return  line
+def writeData(path):
+    try:
+        file = open(path,"w+")
+        file.writelines(lines)
+        file.close()
+    except Exception,e:
+        print "写入文件失败"
+ 
+if __name__ == '__main__':
+     try:
+         provinces = getProvinces()
+         print "10%"
+         citis = getDeepArea(provinces)
+         print "20%"
+         districts =  getDeepArea(citis)
+         print "50%"
+         lines=getLines(districts)
+         print "80%"
+         writeData("d:/data.txt") 
+         print "100%"
+     except Exception,e:
+         print "主程序失败",e
