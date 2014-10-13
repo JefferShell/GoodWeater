@@ -16,8 +16,7 @@ url = 'http://m.weather.com.cn/data3/city%s.xml'
 #得到城市代码  0501|哈尔滨,0502|齐齐哈尔,0503|牡丹江,0504|
 cities = []
 districts = []
-destination = []
-countyName = []
+line = "{"
 for p in provinces:
     try:
         p_code = p.split('|')[0]
@@ -40,15 +39,16 @@ for d in districts:
     try:
         d_pair = d.split('|')
         d_code = d_pair[0]
-        countyName += d_pair[1]
+        countyName = d_pair[1]
         url4 = url % d_code
         content4 = urllib2.urlopen(url4).read()
 #         print content4
-        destination += content4.split('|')[1]
+        destination = content4.split('|')[1]
+        line += "'%s':'%s',\n" % (countyName,destination)
     except:
-        print d_code,'失败了'
-line = "'%s':'%s',\n" % (countyName,destination)
+        print d_code,'失败了'    
+lines = line+"}"
 file = open("d:1.txt","w+")
-file.writelines(line)
+file.writelines(lines)
 
 # print countyName + ':' + destination
